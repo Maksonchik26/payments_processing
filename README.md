@@ -68,6 +68,7 @@ cd payment-processing
 Скопируйте файл:
    ```bash
    cp .env.example .env
+   ```
    
 ---
 

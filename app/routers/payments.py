@@ -28,7 +28,7 @@ async def create_payment(
     return payment
 
 
-@router.get("/payments/{payment_id}", status_code=status.HTTP_200_OK, response_model=PaymentSearchOut)
+@router.get("/payments/{payment_id}", status_code=status.HTTP_200_OK, response_model=PaymentSearchOut | None)
 async def create_payment(
     payment_id: UUID,
     session: AsyncSession = Depends(get_async_session),

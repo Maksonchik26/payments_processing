@@ -1,8 +1,8 @@
-from uuid import UUID, uuid4
+from uuid import uuid4
 from datetime import datetime
 
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, DateTime, Integer, Enum, Text, JSON, func, Numeric
+from sqlalchemy import String, DateTime, Integer, Text, JSON, func, Numeric
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 
 from app.common.enums import OutboxStatusEnum, PaymentStatusEnum, CurrencyEnum
@@ -53,4 +53,4 @@ class Outbox(Base, UpdateMixin):
         server_default=func.now(),
         nullable=False
     )
-    processed_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)

@@ -3,15 +3,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 
-from app.common.exceptions import (
-    ResourceExists,
-    NotFromTable,
-    RequestCorrectNotFound,
-    RedundantOperation,
-    NotEnoughRights,
-    ParameterCannotBeChanged,
-)
-from app.db.models import Payment, Outbox
+from app.db.models import Payment
 from app.schemas.outbox import OutboxCreateIn
 from app.schemas.payments import (
     PaymentCreateIn

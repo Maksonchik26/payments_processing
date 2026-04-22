@@ -1,15 +1,13 @@
 import logging
 import traceback
-from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI, status, Request
-from fastapi.exceptions import RequestValidationError
+from fastapi import FastAPI, Request, Security, Depends
 from fastapi.responses import JSONResponse
+from fastapi.security import APIKeyHeader
 
-from app.common.error_handlers import api_error_handler, custom_405_handler, custom_422_handler, custom_http_exception_handler
-from app.common.exceptions import APIError
-from app.infrastructure.messaging.broker.broker import broker
+from app.common.exceptions import InvalidAuthData
+from app.config import settings
 from app.routers.payments import router as payments_router
 
 logging.basicConfig(
@@ -18,13 +16,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger("uvicorn.error")
 
-app = FastAPI()
+API_KEY_NAME = "X-API-Key"
 
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
-app.add_exception_handler(APIError, api_error_handler)
-app.add_exception_handler(status.HTTP_405_METHOD_NOT_ALLOWED, custom_405_handler)
-app.add_exception_handler(RequestValidationError, custom_422_handler)
-app.add_exception_handler(status.HTTP_401_UNAUTHORIZED, custom_http_exception_handler)
+async def get_api_key(api_key_header: str = Security(api_key_header)):
+    if api_key_header == settings.STATIC_API_KEY:
+        return api_key_header
+    else:
+        raise InvalidAuthData()
+
+app = FastAPI(dependencies=[Depends(get_api_key)])
 
 @app.middleware("http")
 async def log_exceptions(request: Request, call_next):

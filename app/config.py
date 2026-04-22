@@ -8,10 +8,9 @@ class Settings(BaseSettings):
     DB_PORT: int = 5432
     DB_NAME: str = "payments"
 
-    BROKER_HOST: str = "localhost"
-    BROKER_PORT: int = "5672"
-    BROKER_USER: str = ""
-    BROKER_PASSWORD: str = ""
+    BROKER_URL: str = "amqp://guest:guest@rabbitmq:5672/"
+    STATIC_API_KEY: str = ""
+    POLL_INTERVAL: int = 1
 
 
 

@@ -4,56 +4,92 @@ services:
   postgres:
     image: postgres:15
     container_name: payments_postgres
-    restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: payments
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d payments"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: payments_rabbitmq
-    restart: always
     ports:
-      - "5672:5672"     # broker
-      - "15672:15672"   # UI
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrations:
+    build: .
+    container_name: payments_migrations
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+
+    restart: "no"
 
   api:
     build: .
     container_name: payments_api
-    restart: always
-    depends_on:
-      - postgres
-      - rabbitmq
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/payments
-      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
-      API_KEY: super-secret
-    command: >
-      sh -c "alembic upgrade head &&
-             uvicorn app.main:app --host 0.0.0.0 --port 8000"
-
-  worker:
-    build: .
-    container_name: payments_worker
-    restart: always
     depends_on:
-      - postgres
-      - rabbitmq
-    environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/payments
-      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
-    command: >
-      python app/worker.py
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+
+
+
+  outbox-worker:
+    build: .
+    container_name: outbox_worker
+    command: python -m app.workers.outbox_worker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    env_file:
+      - .env
+
+  payment-consumer:
+    build: .
+    container_name: payment_consumer
+    command: python -m app.workers.payment_consumer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+    env_file:
+      - .env
 
 volumes:
   postgres_data:

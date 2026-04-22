@@ -2,9 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, status, Depends, Header
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
 
-from app.common.exceptions import ContactAdministrator, NotFromTable, ResourceExists
 from app.db.base import get_async_session
 from app.schemas.payments import (
     PaymentCreateIn,

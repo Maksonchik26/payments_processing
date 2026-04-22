@@ -1,8 +1,8 @@
 """init_mirgation
 
-Revision ID: 888cfd71759f
+Revision ID: 6abbe5396f3d
 Revises: 
-Create Date: 2026-04-19 09:54:10.836167
+Create Date: 2026-04-22 06:26:49.589490
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '888cfd71759f'
+revision: str = '6abbe5396f3d'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,7 +30,7 @@ def upgrade() -> None:
     sa.Column('next_retry_at', sa.DateTime(), nullable=True),
     sa.Column('last_error', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('processed_at', sa.DateTime(), nullable=True),
+    sa.Column('processed_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('outbox_id')
     )
     op.create_table('payments',

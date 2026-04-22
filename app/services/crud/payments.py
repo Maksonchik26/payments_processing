@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select, and_
+from sqlalchemy import select
 
 from app.db.models import Payment
 from app.schemas.payments import PaymentCreateDB

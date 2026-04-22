@@ -1,4 +1,4 @@
-from faststream.rabbit import RabbitBroker, RabbitQueue, RabbitExchange
+from faststream.rabbit import RabbitBroker
 from app.config import settings
 
 broker = RabbitBroker(settings.BROKER_URL)
@@ -9,4 +9,3 @@ async def publish_event(topic: str, payload: dict):
         message=payload,
         routing_key=topic,
     )
-

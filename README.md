@@ -57,8 +57,8 @@ Payment Consumer
 ## Клонирование репозитория
 
 ```bash
-git clone https://github.com/Maksonchik26/payment-processing.git
-cd payment-processing
+git clone https://github.com/Maksonchik26/payments_processing.git
+cd payment_processing
 ```
 
 ---
@@ -200,7 +200,7 @@ docker compose up --build -d
 ---
 
 ## 2. Создать платёж
-
+```bash
 curl -X POST http://localhost:8000/v1/payments \
   -H "Content-Type: application/json" \
   -H "X-API-Key: my_secret_static_key_123" \
@@ -211,12 +211,15 @@ curl -X POST http://localhost:8000/v1/payments \
       "description": "Платеж определенного банка",
       "webhook_url": "http://url.ru"
 }'
-
+```
 ---
 
 ## 3. Получение информации оп латеже
-
-curl http://localhost:8000/payments/{id}
+```bash
+curl http://localhost:8000/v1/payments/{payment_id} \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: my_secret_static_key_123" \
+```
 
 ---
 

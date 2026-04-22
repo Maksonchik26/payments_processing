@@ -6,8 +6,9 @@ from datetime import datetime, timezone
 
 from app.db.base import async_session
 from app.db.models import Payment
+from app.infrastructure.common.retry import retry
 from app.infrastructure.http.webhook_client import send_webhook
-from app.infrastructure.messaging.broker.broker import broker
+from app.infrastructure.messaging.broker.broker import broker, start_consume_with_retry
 
 
 async def send_webhook_with_retry(url: str, payload: dict, retries: int = 3) -> None:
@@ -65,8 +66,10 @@ async def handle_dlq(event: dict):
 
 async def main() -> None:
     async with broker:
-        await broker.start()
-        logging.info("Consumer started")
+        await retry(
+            action=broker.start,
+            name="Consumer started",
+        )
         await asyncio.Event().wait()
 
 

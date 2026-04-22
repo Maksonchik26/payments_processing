@@ -4,13 +4,17 @@ from datetime import datetime, timezone
 from app.common.enums import OutboxStatusEnum
 from app.config import settings
 from app.db.models import Outbox
-from app.infrastructure.messaging.broker.broker import publish_event, broker
+from app.infrastructure.common.retry import retry
+from app.infrastructure.messaging.broker.broker import publish_event, broker, connect_with_retry
 from app.infrastructure.outbox.repository import OutboxRepository
 from app.db.base import async_session
 
 
 async def worker_loop():
-    await broker.connect()
+    await retry(
+        action=broker.connect,
+        name="Worker started",
+    )
 
     try:
         while True:

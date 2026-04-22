@@ -54,6 +54,24 @@ Payment Consumer
 
 ---
 
+## Клонирование репозитория
+
+```bash
+git clone https://github.com/Maksonchik26/payment-processing.git
+cd payment-processing
+```
+
+---
+
+## ⚙️ Конфигурация
+
+Скопируйте файл:
+   ```bash
+   cp .env.example .env
+   
+---
+
+
 ## ▶️ Запуск проекта
 
 ```bash

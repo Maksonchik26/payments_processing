@@ -58,7 +58,7 @@ Payment Consumer
 
 ```bash
 git clone https://github.com/Maksonchik26/payments_processing.git
-cd payment_processing
+cd payments_processing
 ```
 
 ---

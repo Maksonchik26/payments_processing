@@ -249,27 +249,6 @@ guest / guest
 ---
 
 
-# 🧯 Возможные проблемы
-
-## ❌ Сервисы не стартуют
-
-docker compose down -v
-docker compose up --build
-
----
-
-## ❌ Нет подключения к RabbitMQ
-
-amqp://guest:guest@rabbitmq:5672/
-
----
-
-## ❌ Не создаются таблицы
-
-Убедись, что контейнер migrations завершился успешно.
-
----
-
 # 🏁 Итог
 
 Проект реализует надёжную event-driven архитектуру с:
